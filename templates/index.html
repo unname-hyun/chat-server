@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>채팅</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #eef1f6;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-box {
+      background: #fff;
+      width: 360px;
+      height: 560px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 6px 0 10px;
+    }
+
+    #nickname {
+      height: 36px;
+      padding: 6px 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 8px;
+    }
+
+    #chat {
+      flex: 1;
+      list-style: none;
+      padding: 10px;
+      margin: 0;
+      border-radius: 10px;
+      background: #f7f8fa;
+      overflow-y: auto;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      border-radius: 12px;
+      font-size: 14px;
+      word-wrap: break-word;
+    }
+
+    .me {
+      background: #4a6cff;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
+    }
+
+    .other {
+      background: #e4e7ec;
+      color: #000;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
+    }
+
+    .name {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-bottom: 2px;
+    }
+
+    .system {
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.6;
+      margin: 10px 0;
+    }
+
+    .inputs {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    #message {
+      flex: 1;
+      height: 38px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 60px;
+      border: none;
+      border-radius: 8px;
+      background: #4a6cff;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #3b59e0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-box">
+  <h2>채팅</h2>
+
+  <input id="nickname" placeholder="닉네임">
+
+  <ul id="chat"></ul>
+
+  <div class="inputs">
+    <input id="message" placeholder="메시지">
+    <button onclick="send()">전송</button>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script>
+  const socket = io();
+  let myName = "";
+  let joined = false;
+
+  const chat = document.getElementById("chat");
+
+  document.getElementById("nickname").addEventListener("change", e => {
+    if (joined) return;
+    myName = e.target.value.trim();
+    if (!myName) return;
+
+    socket.emit("join", { nickname: myName });
+    e.target.disabled = true;
+    joined = true;
+  });
+
+  socket.on("receive_message", data => {
+    const li = document.createElement("li");
+    const isMe = data.nickname === myName;
+
+    li.classList.add("message", isMe ? "me" : "other");
+
+    if (!isMe) {
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = data.nickname;
+      li.appendChild(name);
+    }
+
+    const text = document.createElement("div");
+    text.textContent = data.message;
+    li.appendChild(text);
+
+    chat.appendChild(li);
+    chat.scrollTop = chat.scrollHeight;
+  });
+
+  socket.on("system_message", text => {
+    const li = document.createElement("li");
+    li.className = "system";
+    li.textContent = text;
+    chat.appendChild(li);
+    chat.scrollTop = chat.scrollHeight;
+  });
+
+  function send() {
+    const msg = document.getElementById("message");
+    if (!joined || !msg.value.trim()) return;
+
+    socket.emit("send_message", {
+      nickname: myName,
+      message: msg.value
+    });
+
+    msg.value = "";
+  }
+
+  document.getElementById("message").addEventListener("keydown", e => {
+    if (e.key === "Enter") send();
+  });
+</script>
+
+</body>
+</html>
