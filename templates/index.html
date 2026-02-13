@@ -2,28 +2,34 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>채팅</title>
   <style>
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* 전체 화면 스크롤 막기 */
       background: #eef1f6;
       font-family: Arial, sans-serif;
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
     .chat-box {
+      position: fixed; /* 화면에 고정 */
+      width: 90%;
+      max-width: 420px;
+      height: 85vh;
       background: #fff;
-      width: 95%;
-      max-width: 600px;
-      height: 95vh;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
       display: flex;
       flex-direction: column;
       padding: 16px;
@@ -31,14 +37,14 @@
 
     h2 {
       text-align: center;
-      margin: 6px 0 12px;
-      font-size: 20px;
+      margin: 8px 0 14px;
+      font-size: 22px;
     }
 
     #nickname {
-      height: 44px;
+      height: 42px;
       padding: 8px 12px;
-      font-size: 16px;
+      font-size: 15px;
       border-radius: 10px;
       border: 1px solid #ccc;
       margin-bottom: 10px;
@@ -49,9 +55,9 @@
       list-style: none;
       padding: 12px;
       margin: 0;
-      border-radius: 12px;
-      background: #f7f8fa;
-      overflow-y: auto;
+      border-radius: 14px;
+      background: #f1f2f6;
+      overflow-y: auto; /* 채팅창 내부만 스크롤 */
     }
 
     .message {
@@ -59,7 +65,7 @@
       padding: 10px 14px;
       margin-bottom: 10px;
       border-radius: 14px;
-      font-size: 16px;
+      font-size: 15px;
       word-wrap: break-word;
     }
 
@@ -85,7 +91,7 @@
 
     .system {
       text-align: center;
-      font-size: 13px;
+      font-size: 12px;
       opacity: 0.6;
       margin: 10px 0;
     }
@@ -98,11 +104,11 @@
 
     #message {
       flex: 1;
-      height: 44px;
-      padding: 10px;
+      height: 42px;
+      padding: 8px 12px;
       border-radius: 10px;
       border: 1px solid #ccc;
-      font-size: 16px;
+      font-size: 15px;
     }
 
     button {
@@ -111,21 +117,12 @@
       border-radius: 10px;
       background: #4a6cff;
       color: white;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
     }
 
     button:hover {
       background: #3b59e0;
-    }
-
-    /* 모바일 최적화 */
-    @media (max-width: 480px) {
-      .chat-box {
-        width: 100%;
-        height: 100vh;
-        border-radius: 0;
-      }
     }
   </style>
 </head>
