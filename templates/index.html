@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>채팅</title>
+
   <style>
     * { box-sizing: border-box; }
 
@@ -11,7 +12,7 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* 전체 화면 스크롤 막기 */
+      overflow: hidden;
       background: #eef1f6;
       font-family: Arial, sans-serif;
     }
@@ -23,7 +24,7 @@
     }
 
     .chat-box {
-      position: fixed; /* 화면에 고정 */
+      position: fixed;
       width: 90%;
       max-width: 420px;
       height: 85vh;
@@ -57,7 +58,7 @@
       margin: 0;
       border-radius: 14px;
       background: #f1f2f6;
-      overflow-y: auto; /* 채팅창 내부만 스크롤 */
+      overflow-y: auto;
     }
 
     .message {
@@ -126,6 +127,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="chat-box">
@@ -141,12 +143,14 @@
   </div>
 </div>
 
+<!-- 🔔 외부 URL 효과음 -->
+<audio id="ding" src="https://actions.google.com/sounds/v1/alarms/ding.ogg"></audio>
+
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
 <script>
   const socket = io();
   let myName = "";
   let joined = false;
-
   const chat = document.getElementById("chat");
 
   document.getElementById("nickname").addEventListener("change", e => {
@@ -188,6 +192,13 @@
     chat.scrollTop = chat.scrollHeight;
   });
 
+  // 🔔 멘션 알림
+  socket.on("mention_alert", data => {
+    const ding = document.getElementById("ding");
+    ding.currentTime = 0;
+    ding.play().catch(() => {});
+  });
+
   function send() {
     const msg = document.getElementById("message");
     if (!joined || !msg.value.trim()) return;
@@ -207,4 +218,3 @@
 
 </body>
 </html>
-
